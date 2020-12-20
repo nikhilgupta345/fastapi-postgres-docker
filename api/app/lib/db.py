@@ -40,5 +40,19 @@ def get_all_items() -> List[Item]:
             cursor.execute(query)
             columns = [column.name for column in cursor.description]
             rows = cursor.fetchall()
-            print(rows)
             return [Item.parse_obj(dict(zip(columns, row))) for row in rows]
+
+
+def get_item_by_id(item_id: int) -> List[Item]:
+    query = 'SELECT * FROM Item WHERE ID = %s;'
+
+    with get_db_conn() as conn:
+        with conn.cursor() as cursor:
+            cursor.execute(query, (item_id,))
+            columns = [column.name for column in cursor.description]
+            row = cursor.fetchone()
+
+            if not row:
+                return None
+
+            return Item.parse_obj(dict(zip(columns, row)))
