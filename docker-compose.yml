@@ -1,0 +1,22 @@
+version: '3'
+services:
+  db:
+    image: postgres
+    container_name: postgres
+    ports:
+        - 5432:5432
+    volumes:
+        - ./db/init.sql:/docker-entrypoint-initdb.d/0001-init.sql
+        - ./db/data:/var/lib/postgresql/data
+    environment:
+        - POSTGRES_PASSWORD=MyS3cretPassw0rd!
+  api:
+    container_name: api
+    build: ./api
+    ports:
+        - 80:80
+    restart: on-failure
+    depends_on:
+        - db
+    environment:
+      - POSTGRES_DSN=postgres://postgres:MyS3cretPassw0rd!@db:5432/postgres
